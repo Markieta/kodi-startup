@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+
+CHROOT='/media/_/'
+
+umount "$CHROOT" # Re-mount to remove options like `nonexec`
+
+mount        /dev/sdb1 "$CHROOT"
+mount --bind /dev/     "$CHROOT"/dev/
+mount --bind /dev/pts/ "$CHROOT"/dev/pts/
+mount --bind /sys/     "$CHROOT"/sys/
+mount --bind /proc/    "$CHROOT"/proc/
+
+# screen -dmS 'qbittorrent' qbittorrent-nox
