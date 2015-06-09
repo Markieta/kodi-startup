@@ -7,4 +7,3 @@ umount "$CHROOT"/dev/
 umount "$CHROOT"/sys/
 umount "$CHROOT"/proc/
 umount "$CHROOT"
-
