@@ -2,8 +2,6 @@
 
 SETTINGS='/media/sdcard/tofu-data/userdata/xios/root/.config/transmission-daemon/settings.json'
 
-pkill kodi
-
 # Initialize Samba server
 echo -e '[torrent]\npath = /opt/torrent/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n'    >> /etc/samba/smb.conf
 echo -e '[music]\npath = /media/sdb1/music/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n' >> /etc/samba/smb.conf
@@ -19,3 +17,5 @@ sed -i 's/"alt-speed-time-begin": [0-9]*/"alt-speed-time-begin": 540/'         "
 sed -i 's/"alt-speed-time-end": [0-9]*/"alt-speed-time-end": 240/'             "$SETTINGS"
 
 /opt/bin/transmission-daemon &
+
+pkill kodi
