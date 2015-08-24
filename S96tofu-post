@@ -2,9 +2,12 @@
 
 SETTINGS='/media/sdcard/tofu-data/userdata/xios/root/.config/transmission-daemon/settings.json'
 
+ln -s /usr/share/zoneinfo/America/Toronto /etc/localtime
+
 # Initialize Samba server
-echo -e '[torrent]\npath = /opt/torrent/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n'    >> /etc/samba/smb.conf
-echo -e '[music]\npath = /media/sdb1/music/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n' >> /etc/samba/smb.conf
+echo -e '[torrent]\npath = /opt/torrent/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n'      >> /etc/samba/smb.conf
+echo -e   '[music]\npath = /media/sdb1/music/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n' >> /etc/samba/smb.conf
+echo -e      '[tv]\npath = /media/sdc1/tv/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n'    >> /etc/samba/smb.conf
 
 sed -i 's/"alt-speed-down": [0-9]*/"alt-speed-down": 250000/'                    "$SETTINGS"
 sed -i 's/"alt-speed-up": [0-9]*/"alt-speed-up": 250000/'                        "$SETTINGS"
