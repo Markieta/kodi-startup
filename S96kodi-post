@@ -1,15 +1,21 @@
 #!/usr/bin/env sh
 
-CHROOT='/media/_/'
+SETTINGS='/media/sdcard/tofu-data/userdata/xios/root/.config/transmission-daemon/settings.json'
 
-umount "$CHROOT" # Re-mount to remove options like `nonexec`
+pkill kodi
 
-mount        /dev/sdb1    "$CHROOT"
-mount --bind /dev/        "$CHROOT"/dev/
-mount --bind /dev/pts/    "$CHROOT"/dev/pts/
-mount --bind /sys/        "$CHROOT"/sys/
-mount --bind /proc/       "$CHROOT"/proc/
-mount --bind /media/sda1/ "$CHROOT"/media/sda1/
-mount --bind /media/sdc1/ "$CHROOT"/media/sdc1/
+# Initialize Samba server
+echo -e '[torrent]\npath = /opt/torrent/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n'    >> /etc/samba/smb.conf
+echo -e '[music]\npath = /media/sdb1/music/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n' >> /etc/samba/smb.conf
 
-# screen -dmS 'qbittorrent' qbittorrent-nox
+sed -i 's/"alt-speed-down": [0-9]*/"alt-speed-down": 500/'                     "$SETTINGS"
+sed -i 's/"alt-speed-up": [0-9]*/"alt-speed-up": 200/'                         "$SETTINGS"
+sed -i 's/"speed-limit-down": [0-9]*/"speed-limit-down": 250000/'              "$SETTINGS"
+sed -i 's/"speed-limit-up": [0-9]*/"speed-limit-up": 250000/'                  "$SETTINGS"
+sed -i 's/"speed-limit-down-enabled": false/"speed-limit-down-enabled": true/' "$SETTINGS"
+sed -i 's/"speed-limit-up-enabled": false/"speed-limit-up-enabled": true/'     "$SETTINGS"
+sed -i 's/"alt-speed-time-enabled": false/"alt-speed-time-enabled": true/'     "$SETTINGS"
+sed -i 's/"alt-speed-time-begin": [0-9]*/"alt-speed-time-begin": 540/'         "$SETTINGS"
+sed -i 's/"alt-speed-time-end": [0-9]*/"alt-speed-time-end": 240/'             "$SETTINGS"
+
+/opt/bin/transmission-daemon &
