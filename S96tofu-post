@@ -34,3 +34,4 @@ ifconfig wlan0 down
 
 pkill kodi
 
+/opt/sbin/nginx
