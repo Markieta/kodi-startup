@@ -14,11 +14,6 @@ crond
           '\n0 9 * * * /sbin/start-stop-daemon --stop --quiet --retry=TERM/10/KILL/5 --exec /opt/bin/transmission-daemon'
 ) | crontab -
 
-# Initialize Samba server
-echo -e '[torrent]\npath = /opt/torrent/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n'      >> /etc/samba/smb.conf
-echo -e   '[music]\npath = /media/sdb1/music/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n' >> /etc/samba/smb.conf
-echo -e      '[tv]\npath = /media/sdc1/tv/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n'    >> /etc/samba/smb.conf
-
 sed -i 's/"alt-speed-down": [0-9]*/"alt-speed-down": 0/'                         "$SETTINGS"
 sed -i 's/"alt-speed-up": [0-9]*/"alt-speed-up": 0/'                             "$SETTINGS"
 sed -i 's/"speed-limit-down": [0-9]*/"speed-limit-down": 250000/'                "$SETTINGS"
@@ -26,7 +21,7 @@ sed -i 's/"speed-limit-up": [0-9]*/"speed-limit-up": 250000/'                   
 sed -i 's/"speed-limit-down-enabled": false/"speed-limit-down-enabled": true/'   "$SETTINGS"
 sed -i 's/"speed-limit-up-enabled": false/"speed-limit-up-enabled": true/'       "$SETTINGS"
 sed -i 's/"alt-speed-time-enabled": false/"alt-speed-time-enabled": true/'       "$SETTINGS"
-sed -i 's/"alt-speed-time-begin": [0-9]*/"alt-speed-time-begin": 540/'           "$SETTINGS"
+sed -i 's/"alt-speed-time-begin": [0-9]*/"alt-speed-time-begin": 420/'           "$SETTINGS"
 sed -i 's/"alt-speed-time-end": [0-9]*/"alt-speed-time-end": 120/'               "$SETTINGS"
 sed -i 's/"download-dir": "\/root\/Downloads"/"download-dir": "\/opt\/torrent"/' "$SETTINGS"
 
@@ -35,3 +30,17 @@ ifconfig wlan0 down
 pkill kodi
 
 /opt/sbin/nginx
+
+# Initialize NFS server
+/opt/sbin/portmap
+/opt/sbin/unfsd -e /opt/etc/exports
+
+# Initialize Samba server
+sed -i '/log file/a\socket options = TCP_NODELAY IPTOS_LOWDELAY SO_RCVBUF=65536 SO_SNDBUF=65536/' /etc/samba/smb.conf
+echo -e '[torrent]\npath = /opt/torrent/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n'      >> /etc/samba/smb.conf
+echo -e   '[music]\npath = /media/sdb1/music/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n' >> /etc/samba/smb.conf
+echo -e      '[tv]\npath = /media/sdc1/tv/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n'    >> /etc/samba/smb.conf
+echo -e     '[tv2]\npath = /media/sdd1/tv/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n'    >> /etc/samba/smb.conf
+echo -e     '[tv3]\npath = /media/sde1/tv/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n'    >> /etc/samba/smb.conf
+echo -e     '[tv4]\npath = /media/sdf1/tv/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n'    >> /etc/samba/smb.conf
+
