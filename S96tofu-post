@@ -36,7 +36,14 @@ pkill kodi
 /opt/sbin/unfsd -e /opt/etc/exports
 
 # Initialize Samba server
-sed -i '/log file/a\socket options = TCP_NODELAY IPTOS_LOWDELAY SO_RCVBUF=131072 SO_SNDBUF=131072\nuse sendfile = true\nstrict allocate = yes\naio read size = 16384\naio write size = 16384\nmin receivefile size = 16384' /etc/samba/smb.conf
+sed -i '/log file/a\
+socket options = TCP_NODELAY IPTOS_LOWDELAY SO_RCVBUF=131072 SO_SNDBUF=131072\
+use sendfile = true\
+strict allocate = yes\
+aio read size = 16384\
+aio write size = 16384\
+min receivefile size = 16384' /etc/samba/smb.conf
+
 echo -e '[torrent]\npath = /opt/torrent/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n'      >> /etc/samba/smb.conf
 echo -e   '[music]\npath = /media/sdb1/music/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n' >> /etc/samba/smb.conf
 echo -e      '[tv]\npath = /media/sdc1/tv/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n'    >> /etc/samba/smb.conf
