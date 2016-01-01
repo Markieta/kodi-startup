@@ -5,37 +5,48 @@ SETTINGS='/media/sdcard/tofu-data/userdata/xios/root/.config/transmission-daemon
 ln -s /usr/share/zoneinfo/America/Toronto /etc/localtime
 
 mkdir -p /var/spool/cron/crontabs/
-crond
+#crond
 
-(
-    crontab -l
-    echo -e '0 2 * * * /opt/bin/transmission-daemon'\
-          '\n1 2 * * * /opt/local/bin/flexget --cron execute'\
-          '\n0 9 * * * /sbin/start-stop-daemon --stop --quiet --retry=TERM/10/KILL/5 --exec /opt/bin/transmission-daemon'
-) | crontab -
+#(
+#    crontab -l
+#    echo -e '0 2 * * * /opt/bin/transmission-daemon'\
+#          '\n1 2 * * * /opt/local/bin/flexget --cron execute'\
+#          '\n0 9 * * * /sbin/start-stop-daemon --stop --quiet --retry=TERM/10/KILL/5 --exec /opt/bin/transmission-daemon'
+#) | crontab -
 
-sed -i 's/"alt-speed-down": [0-9]*/"alt-speed-down": 0/'                         "$SETTINGS"
-sed -i 's/"alt-speed-up": [0-9]*/"alt-speed-up": 0/'                             "$SETTINGS"
-sed -i 's/"speed-limit-down": [0-9]*/"speed-limit-down": 250000/'                "$SETTINGS"
-sed -i 's/"speed-limit-up": [0-9]*/"speed-limit-up": 250000/'                    "$SETTINGS"
-sed -i 's/"speed-limit-down-enabled": false/"speed-limit-down-enabled": true/'   "$SETTINGS"
-sed -i 's/"speed-limit-up-enabled": false/"speed-limit-up-enabled": true/'       "$SETTINGS"
-sed -i 's/"alt-speed-time-enabled": false/"alt-speed-time-enabled": true/'       "$SETTINGS"
-sed -i 's/"alt-speed-time-begin": [0-9]*/"alt-speed-time-begin": 420/'           "$SETTINGS"
-sed -i 's/"alt-speed-time-end": [0-9]*/"alt-speed-time-end": 120/'               "$SETTINGS"
-sed -i 's/"download-dir": "\/root\/Downloads"/"download-dir": "\/opt\/torrent"/' "$SETTINGS"
-sed -i 's/"download-queue-enabled": true/"download-queue-enabled": false/'       "$SETTINGS"
-sed -i 's/"queue-stalled-enabled": true/"queue-stalled-enabled": false/'         "$SETTINGS"
+sed -i 's/"alt-speed-down": [0-9]*/"alt-speed-down": 0/'                         "$SETTINGS" &
+sed -i 's/"alt-speed-up": [0-9]*/"alt-speed-up": 0/'                             "$SETTINGS" &
+sed -i 's/"speed-limit-down": [0-9]*/"speed-limit-down": 250000/'                "$SETTINGS" &
+sed -i 's/"speed-limit-up": [0-9]*/"speed-limit-up": 250000/'                    "$SETTINGS" &
+sed -i 's/"speed-limit-down-enabled": false/"speed-limit-down-enabled": true/'   "$SETTINGS" &
+sed -i 's/"speed-limit-up-enabled": false/"speed-limit-up-enabled": true/'       "$SETTINGS" &
+sed -i 's/"alt-speed-time-enabled": false/"alt-speed-time-enabled": true/'       "$SETTINGS" &
+sed -i 's/"alt-speed-time-begin": [0-9]*/"alt-speed-time-begin": 420/'           "$SETTINGS" &
+sed -i 's/"alt-speed-time-end": [0-9]*/"alt-speed-time-end": 120/'               "$SETTINGS" &
+sed -i 's/"download-dir": "\/root\/Downloads"/"download-dir": "\/opt\/torrent"/' "$SETTINGS" &
+sed -i 's/"download-queue-enabled": true/"download-queue-enabled": false/'       "$SETTINGS" &
+sed -i 's/"queue-stalled-enabled": true/"queue-stalled-enabled": false/'         "$SETTINGS" &
 
-ifconfig wlan0 down
+ifconfig wlan0 down &
 
-pkill kodi
+pkill kodi &
 
-/opt/sbin/nginx
+# Force mount missing devices
+# [ -d '/opt/' ]        || (mkdir /opt/        && mount /dev/sda1 /opt/) &
+[ -d '/media/sdb1/' ] || (mkdir /media/sdb1/ && mount /dev/sdb1 /media/sdb1/) &
+[ -d '/media/sdc1/' ] || (mkdir /media/sdc1/ && mount /dev/sdc1 /media/sdc1/) &
+[ -d '/media/sdd1/' ] || (mkdir /media/sdd1/ && mount /dev/sdd1 /media/sdd1/) &
+[ -d '/media/sde1/' ] || (mkdir /media/sde1/ && mount /dev/sde1 /media/sde1/) &
+[ -d '/media/sdf1/' ] || (mkdir /media/sdf1/ && mount /dev/sdf1 /media/sdf1/) &
+
+wait
+
+/opt/sbin/nginx    &
+( sleep 30; /opt/sbin/minidlna ) & # Avoid segfault
 
 # Initialize NFS server
 /opt/sbin/portmap
-/opt/sbin/unfsd -e /opt/etc/exports
+/opt/sbin/unfsd -e /opt/etc/exports &
 
 # Initialize Samba server
 #sed -i 's/log level = 1/log level = 4/' /etc/samba/smb.conf
@@ -45,13 +56,13 @@ use sendfile = true\
 strict allocate = yes\
 aio read size = 16384\
 aio write size = 16384\
-min receivefile size = 16384' /etc/samba/smb.conf\
-hosts allow = 192.168.0.103 192.168.0.106 192.168.0.150 192.168.0.151 192.168.0.152
+min receivefile size = 16384\
+hosts allow = 192.168.0.103 192.168.0.106 192.168.0.150 192.168.0.151 192.168.0.152' /etc/samba/smb.conf\ &
 
-echo -e '[torrent]\npath = /opt/torrent/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n'      >> /etc/samba/smb.conf
-echo -e   '[music]\npath = /media/sdb1/music/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n' >> /etc/samba/smb.conf
-echo -e      '[tv]\npath = /media/sdc1/tv/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n'    >> /etc/samba/smb.conf
-echo -e     '[tv2]\npath = /media/sdd1/tv/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n'    >> /etc/samba/smb.conf
-echo -e     '[tv3]\npath = /media/sde1/tv/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n'    >> /etc/samba/smb.conf
-echo -e     '[tv4]\npath = /media/sdf1/tv/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n'    >> /etc/samba/smb.conf
+echo -e '[torrent]\npath = /opt/torrent/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n'      >> /etc/samba/smb.conf &
+echo -e   '[music]\npath = /media/sdb1/music/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n' >> /etc/samba/smb.conf &
+echo -e      '[tv]\npath = /media/sdc1/tv/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n'    >> /etc/samba/smb.conf &
+echo -e     '[tv2]\npath = /media/sdd1/tv/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n'    >> /etc/samba/smb.conf &
+echo -e     '[tv3]\npath = /media/sde1/tv/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n'    >> /etc/samba/smb.conf &
+echo -e     '[tv4]\npath = /media/sdf1/tv/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n'    >> /etc/samba/smb.conf &
 
