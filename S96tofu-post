@@ -57,7 +57,7 @@ strict allocate = yes\
 aio read size = 16384\
 aio write size = 16384\
 min receivefile size = 16384\
-hosts allow = 192.168.0.103 192.168.0.106 192.168.0.150 192.168.0.151 192.168.0.152' /etc/samba/smb.conf\ &
+hosts allow = 192.168.0.103 192.168.0.106 192.168.0.150 192.168.0.151 192.168.0.152' /etc/samba/smb.conf &
 
 echo -e '[torrent]\npath = /opt/torrent/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n'      >> /etc/samba/smb.conf &
 echo -e   '[music]\npath = /media/sdb1/music/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n' >> /etc/samba/smb.conf &
