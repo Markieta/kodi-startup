@@ -41,8 +41,8 @@ pkill kodi &
 
 wait
 
-/opt/sbin/nginx    &
-( sleep 30; /opt/sbin/minidlna ) & # Avoid segfault
+/opt/sbin/nginx &
+/opt/bin/ushare &
 
 # Initialize NFS server
 /opt/sbin/portmap
