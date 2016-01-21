@@ -1,0 +1,31 @@
+#!/usr/bin/env sh
+
+on=false
+
+while true; do
+    start=true
+
+    ping -q -c 1 192.168.100 && start=false & # MacBook Pro
+    ping -q -c 1 192.168.101 && start=false & # iPad
+    ping -q -c 1 192.168.102 && start=false & # VBox1
+    ping -q -c 1 192.168.103 && start=false & # VBox2
+    ping -q -c 1 192.168.150 && start=false & # Z87X-D3H
+
+    wait
+                                                                                  # Obi100 VoIP
+    if [ "$start" = true ] && [ "$(/opt/bin/wget -q --user admin --password admin 192.168.0.50/DI_S_.xml -O - | grep -co '0 Active Calls')" -eq 3 ]; then
+        if [ "$on" = false ]; then
+            /opt/bin/transmission-daemon
+            on=true
+        fi
+
+        sleep 30
+    else
+        if [ "$on" = true ]; then
+            /sbin/start-stop-daemon --stop --quiet --retry=TERM/10/KILL/5 --exec /opt/bin/transmission-daemon
+            on=false
+        fi
+
+        sleep 600
+    fi
+done

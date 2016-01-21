@@ -1,18 +1,17 @@
 #!/usr/bin/env sh
 
 SETTINGS='/media/sdcard/tofu-data/userdata/xios/root/.config/transmission-daemon/settings.json'
+MY_DIR='/root/.kodi/'
 
 ln -s /usr/share/zoneinfo/America/Toronto /etc/localtime
 
 mkdir -p /var/spool/cron/crontabs/
-#crond
+crond
 
-#(
-#    crontab -l
-#    echo -e '0 2 * * * /opt/bin/transmission-daemon'\
-#          '\n1 2 * * * /opt/local/bin/flexget --cron execute'\
-#          '\n0 9 * * * /sbin/start-stop-daemon --stop --quiet --retry=TERM/10/KILL/5 --exec /opt/bin/transmission-daemon'
-#) | crontab -
+(
+    crontab -l
+    echo '1 2 * * * /opt/local/bin/flexget --cron execute'
+) | crontab -
 
 sed -i 's/"alt-speed-down": [0-9]*/"alt-speed-down": 0/'                         "$SETTINGS" &
 sed -i 's/"alt-speed-up": [0-9]*/"alt-speed-up": 0/'                             "$SETTINGS" &
@@ -20,9 +19,9 @@ sed -i 's/"speed-limit-down": [0-9]*/"speed-limit-down": 250000/'               
 sed -i 's/"speed-limit-up": [0-9]*/"speed-limit-up": 250000/'                    "$SETTINGS" &
 sed -i 's/"speed-limit-down-enabled": false/"speed-limit-down-enabled": true/'   "$SETTINGS" &
 sed -i 's/"speed-limit-up-enabled": false/"speed-limit-up-enabled": true/'       "$SETTINGS" &
-sed -i 's/"alt-speed-time-enabled": false/"alt-speed-time-enabled": true/'       "$SETTINGS" &
-sed -i 's/"alt-speed-time-begin": [0-9]*/"alt-speed-time-begin": 420/'           "$SETTINGS" &
-sed -i 's/"alt-speed-time-end": [0-9]*/"alt-speed-time-end": 120/'               "$SETTINGS" &
+# sed -i 's/"alt-speed-time-enabled": false/"alt-speed-time-enabled": true/'       "$SETTINGS" &
+# sed -i 's/"alt-speed-time-begin": [0-9]*/"alt-speed-time-begin": 420/'           "$SETTINGS" &
+# sed -i 's/"alt-speed-time-end": [0-9]*/"alt-speed-time-end": 120/'               "$SETTINGS" &
 sed -i 's/"download-dir": "\/root\/Downloads"/"download-dir": "\/opt\/torrent"/' "$SETTINGS" &
 sed -i 's/"download-queue-enabled": true/"download-queue-enabled": false/'       "$SETTINGS" &
 sed -i 's/"queue-stalled-enabled": true/"queue-stalled-enabled": false/'         "$SETTINGS" &
@@ -42,7 +41,7 @@ pkill kodi &
 wait
 
 /opt/sbin/nginx &
-/opt/bin/ushare &
+#/opt/bin/ushare &
 
 # Initialize NFS server
 /opt/sbin/portmap
@@ -66,3 +65,5 @@ echo -e     '[tv2]\npath = /media/sdd1/tv/\navailable = yes\nread only = no\nbro
 echo -e     '[tv3]\npath = /media/sde1/tv/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n'    >> /etc/samba/smb.conf &
 echo -e     '[tv4]\npath = /media/sdf1/tv/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n'    >> /etc/samba/smb.conf &
 
+# Quality of Service workaround
+"$MY_DIR"/qos &
