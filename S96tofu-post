@@ -45,12 +45,11 @@ aio write size = 16384\
 min receivefile size = 16384\
 hosts allow = 192.168.0.103 192.168.0.106 192.168.0.150 192.168.0.151 192.168.0.152' /etc/samba/smb.conf &
 
-echo -e '[torrent]\npath = /opt/torrent/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n'      >> /etc/samba/smb.conf &
-echo -e   '[music]\npath = /media/sdb1/music/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n' >> /etc/samba/smb.conf &
-echo -e      '[tv]\npath = /media/sdc1/tv/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n'    >> /etc/samba/smb.conf &
-echo -e     '[tv2]\npath = /media/sdd1/tv/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n'    >> /etc/samba/smb.conf &
-echo -e     '[tv3]\npath = /media/sde1/tv/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n'    >> /etc/samba/smb.conf &
-echo -e     '[tv4]\npath = /media/sdf1/tv/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n'    >> /etc/samba/smb.conf &
+echo -e '[anime]\npath = /media/sdf1/anime/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n' >> /etc/samba/smb.conf &
+echo -e     '[app]\npath = /media/sdf1/app/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n' >> /etc/samba/smb.conf &
+echo -e '[music]\npath = /media/sdf1/music/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n' >> /etc/samba/smb.conf &
+echo -e       '[tv]\npath = /media/sdf1/tv/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\n\n' >> /etc/samba/smb.conf &
 
-# Quality of Service workaround
-"$MY_DIR"/qos &
+# Quality of Service workaround. Run in memory to protect storage device and running script from alterations
+cp "$MY_DIR"/qos /dev/shm
+/dev/shm/qos &
