@@ -13,7 +13,7 @@ while true; do
             on=false
         fi
 
-        sleep 3600
+        sleep 600
     else
         if [ "$on" = false ]; then
             /opt/bin/transmission-daemon
