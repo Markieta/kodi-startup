@@ -1,22 +1,27 @@
 #!/usr/bin/env sh
 
+/opt/bin/transmission-daemon --paused
+
 on=false
 
+
 while true; do
-    if ! /opt/bin/nmap -sP 192.168.0.100 192.168.0.150 | grep -qo '0 hosts up'                            ||
-       /opt/bin/nmap -p 8080 192.168.0.102 192.168.0.103 | grep -qo '8080/tcp open'                       ||
+    if ! /opt/bin/nmap -sP 192.168.0.100 192.168.0.107 192.168.0.150 192.168.0.152 | grep -qo '0 hosts up'                            ||
+       /opt/bin/nmap -p 8080 192.168.0.102 192.168.0.103 192.168.0.108 | grep -qo '8080/tcp open'                       ||
        /opt/bin/wget -q 192.168.0.102:8082 -O - | head -2 | grep -qo '{"key":"IsPlaying","value":"true"}' ||
        /opt/bin/wget -q 192.168.0.103:8082 -O - | head -2 | grep -qo '{"key":"IsPlaying","value":"true"}' ||
+       /opt/bin/wget -q 192.168.0.108:8082 -O - | head -2 | grep -qo '{"key":"IsPlaying","value":"true"}' ||
        [ "$(/opt/bin/wget -q --user admin --password admin 192.168.0.50/DI_S_.xml -O - | grep -co '0 Active Calls')" -ne 3 ]; then
         if [ "$on" = true ]; then
-            /sbin/start-stop-daemon --stop --quiet --retry=TERM/10/KILL/5 --exec /opt/bin/transmission-daemon
+            /opt/bin/transmission-remote -t all -S
             on=false
         fi
 
         sleep 600
     else
         if [ "$on" = false ]; then
-            /opt/bin/transmission-daemon
+            /opt/bin/transmission-remote -t all -s
+            /opt/local/bin/flexget execute &
             on=true
         fi
 

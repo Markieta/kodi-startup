@@ -1,16 +1,13 @@
 #!/usr/bin/env bash
 
-DEV='/dev/sdf1'
-SDF1='/media/sdf1'
-FEDORA='/media/sdb3'
-DEBIAN='/media/sdc1'
+DEV='/dev/sdb1'
+HDD1='/media/hdd1'
+DEBIAN='/opt/debian'
 
-umount "$FEDORA$SDF1"
-umount "$DEBIAN$SDF1"
-umount "$SDF1"
+umount "$DEBIAN$HDD1"
+umount "$HDD1"
 
 fsck.ext4 "$DEV"
 
-mount        "$DEV" "$SDF1"
-mount --bind "$SDF1" "$DEBIAN$SDF1"
-mount --bind "$SDF1" "$FEDORA$SDF1"
+mount "$DEV" "$HDD1"
+mount --bind "$HDD1" "$DEBIAN/$HDD1"

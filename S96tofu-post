@@ -2,39 +2,13 @@
 
 SETTINGS='/media/sdcard/tofu-data/userdata/xios/root/.config/transmission-daemon/settings.json'
 MY_DIR='/root/.kodi'
-FEDORA='/media/sdb3/'
-DEBIAN='/media/sdc1/'
+DEBIAN='/opt/debian/'
 
 ln -s /usr/share/zoneinfo/America/Toronto /etc/localtime
-
-mkdir -p /var/spool/cron/crontabs/
-crond
-
-(
-    crontab -l
-    echo '1 2 * * * /opt/local/bin/flexget --cron execute'
-) | crontab -
 
 ifconfig wlan0 down &
 
 pkill kodi &
-
-# Force mount missing devices
-# [ -d '/opt/' ]        || (mkdir /opt/        && mount /dev/sda1 /opt/) &
-[ -d '/media/sdb3/' ] || (mkdir /media/sdb3/ && mount /dev/sdb3 /media/sdb3/) &
-# [ -d '/media/sdc1/' ] || (mkdir /media/sdc1/ && mount /dev/sdc1 /media/sdc1/) &
-[ -d '/media/sdd1/' ] || (mkdir /media/sdd1/ && mount /dev/sdd1 /media/sdd1/) &
-[ -d '/media/sde1/' ] || (mkdir /media/sde1/ && mount /dev/sde1 /media/sde1/) &
-[ -d '/media/sdf1/' ] || (mkdir /media/sdf1/ && mount /dev/sdf1 /media/sdf1/) &
-
-wait
-
-# /opt/sbin/nginx &
-#/opt/bin/ushare &
-
-# Initialize NFS server
-# /opt/sbin/portmap
-# /opt/sbin/unfsd -e /opt/etc/exports &
 
 # Initialize Samba server
 #sed -i 's/log level = 1/log level = 4/' /etc/samba/smb.conf
@@ -44,41 +18,26 @@ use sendfile = true\
 strict allocate = yes\
 aio read size = 16384\
 aio write size = 16384\
+follow symlinks = yes\
+wide links = yes\
+unix extensions = no\
 min receivefile size = 16384' /etc/samba/smb.conf
 
-echo -e '[anime]\npath = /media/sdf1/anime/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\nhosts allow = 192.168.0.103 192.168.0.150 192.168.0.151 192.168.0.152\n' >> /etc/samba/smb.conf
-echo -e     '[app]\npath = /media/sdf1/app/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\nhosts allow = 192.168.0.150 192.168.0.151 192.168.0.152\n'               >> /etc/samba/smb.conf
-echo -e   '[misc]\npath = /media/sdf1/misc/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\nhosts allow = 192.168.0.150 192.168.0.151 192.168.0.152\n'               >> /etc/samba/smb.conf
-echo -e '[music]\npath = /media/sdf1/music/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\nhosts allow = 192.168.0.150 192.168.0.151 192.168.0.152\n'               >> /etc/samba/smb.conf
-echo -e       '[tv]\npath = /media/sdf1/tv/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\nhosts allow = 192.168.0.103 192.168.0.150 192.168.0.151 192.168.0.152\n' >> /etc/samba/smb.conf
+echo -e '[anime]\npath = /media/hdd1/anime/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\nhosts allow = 192.168.0.103 192.168.0.107 192.168.0.108 192.168.0.150 192.168.0.151 192.168.0.152\n' >> /etc/samba/smb.conf
+echo -e     '[app]\npath = /media/hdd1/app/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\nhosts allow = 192.168.0.150 192.168.0.151 192.168.0.152\n'               >> /etc/samba/smb.conf
+echo -e   '[misc]\npath = /media/hdd1/misc/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\nhosts allow = 192.168.0.150 192.168.0.151 192.168.0.152\n'               >> /etc/samba/smb.conf
+echo -e '[movie]\npath = /media/hdd1/movie/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\nhosts allow = 192.168.0.103 192.168.0.107 192.168.0.108 192.168.0.150 192.168.0.151 192.168.0.152\n' >> /etc/samba/smb.conf
+echo -e '[music]\npath = /media/hdd1/music/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\nhosts allow = 192.168.0.150 192.168.0.151 192.168.0.152\n'               >> /etc/samba/smb.conf
+echo -e       '[tv]\npath = /media/hdd1/tv/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\nhosts allow = 192.168.0.103 192.168.0.107 192.168.0.108 192.168.0.150 192.168.0.151 192.168.0.152\n' >> /etc/samba/smb.conf
 
 # Quality of Service workaround. Run in memory to protect storage device and running script from alterations
 cp "$MY_DIR"/qos /dev/shm
 /dev/shm/qos &
 
-umount /media/_/
-
-mount --bind /dev/        "$FEDORA"/dev/
-mount --bind /dev/pts/    "$FEDORA"/dev/pts/
-mount --bind /sys/        "$FEDORA"/sys/
-mount --bind /proc/       "$FEDORA"/proc/
-mount --bind /opt/        "$FEDORA"/opt/
-mount --bind /media/sdc1/ "$FEDORA"/media/sdc1/
-mount --bind /media/sdd1/ "$FEDORA"/media/sdd1/
-mount --bind /media/sde1/ "$FEDORA"/media/sde1/
-mount --bind /media/sdf1/ "$FEDORA"/media/sdf1/
-
-umount "$DEBIAN" # Re-mount to remove options like `nonexec`
-
-mount        /dev/sdc1    "$DEBIAN"
 mount --bind /dev/        "$DEBIAN"/dev/
 mount --bind /dev/pts/    "$DEBIAN"/dev/pts/
 mount --bind /sys/        "$DEBIAN"/sys/
 mount --bind /proc/       "$DEBIAN"/proc/
-mount --bind /opt/        "$DEBIAN"/opt/
-mount --bind /media/sdb3/ "$DEBIAN"/media/sdb3/
-mount --bind /media/sdd1/ "$DEBIAN"/media/sdd1/
-mount --bind /media/sde1/ "$DEBIAN"/media/sde1/
-mount --bind /media/sdf1/ "$DEBIAN"/media/sdf1/
+mount --bind /media/hdd1/ "$DEBIAN"/media/hdd1/
 
-chroot /media/sdc1/ service plexmediaserver start
+chroot "$DEBIAN" service plexmediaserver start
