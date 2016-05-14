@@ -8,9 +8,10 @@ on=false
 while true; do
     if ! /opt/bin/nmap -sP 192.168.0.100 192.168.0.107 192.168.0.150 192.168.0.152 | grep -qo '0 hosts up' ||
        /opt/bin/nmap -p 8080 192.168.0.102 192.168.0.103 192.168.0.108 | grep -qo '8080/tcp open'          ||
-       /opt/bin/wget -q 192.168.0.102:8082 -O - | head -2 | grep -qo '{"key":"IsPlaying","value":"true"}'  ||
-       /opt/bin/wget -q 192.168.0.103:8082 -O - | head -2 | grep -qo '{"key":"IsPlaying","value":"true"}'  ||
-       /opt/bin/wget -q 192.168.0.108:8082 -O - | head -2 | grep -qo '{"key":"IsPlaying","value":"true"}'  ||
+       # VMedia IPTV cancelled
+       # /opt/bin/wget -q 192.168.0.102:8082 -O - | head -2 | grep -qo '{"key":"IsPlaying","value":"true"}'  ||
+       # /opt/bin/wget -q 192.168.0.103:8082 -O - | head -2 | grep -qo '{"key":"IsPlaying","value":"true"}'  ||
+       # /opt/bin/wget -q 192.168.0.108:8082 -O - | head -2 | grep -qo '{"key":"IsPlaying","value":"true"}'  ||
        [ "$(/opt/bin/wget -q --user admin --password admin 192.168.0.50/DI_S_.xml -O - | grep -co '0 Active Calls')" -ne 3 ]; then
         if [ "$on" = true ]; then
             /opt/bin/transmission-remote -t all -S
