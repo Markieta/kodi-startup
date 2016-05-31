@@ -34,6 +34,8 @@ echo -e       '[tv]\npath = /media/hdd1/tv/\navailable = yes\nread only = no\nbr
 cp "$MY_DIR"/qos /dev/shm
 /dev/shm/qos &
 
+/opt/sbin/ddclient -daemon 5m
+
 mount --bind /dev/        "$DEBIAN"/dev/
 mount --bind /dev/pts/    "$DEBIAN"/dev/pts/
 mount --bind /sys/        "$DEBIAN"/sys/
