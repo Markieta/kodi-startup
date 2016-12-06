@@ -30,11 +30,14 @@ echo -e '[movie]\npath = /media/hdd1/movie/\navailable = yes\nread only = no\nbr
 echo -e '[music]\npath = /media/hdd1/music/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\nhosts allow = 192.168.0.150 192.168.0.151 192.168.0.152\n'               >> /etc/samba/smb.conf
 echo -e       '[tv]\npath = /media/hdd1/tv/\navailable = yes\nread only = no\nbrowseable = yes\npublic = yes\nwritable = yes\nhosts allow = 192.168.0.103 192.168.0.107 192.168.0.108 192.168.0.150 192.168.0.151 192.168.0.152\n' >> /etc/samba/smb.conf
 
+# Start NGINX server
+/opt/sbin/nginx &
+
 # Quality of Service workaround. Run in memory to protect storage device and running script from alterations
 cp "$MY_DIR"/qos /dev/shm
 /dev/shm/qos &
 
-/opt/sbin/ddclient -daemon 30m
+#/opt/sbin/ddclient -daemon 30m
 
 mount --bind /dev/        "$DEBIAN"/dev/
 mount --bind /dev/pts/    "$DEBIAN"/dev/pts/
