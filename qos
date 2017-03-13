@@ -20,12 +20,12 @@ while true; do
 
         sleep 600
     else
+        sleep 10
+
         if [ "$on" = false ]; then
             /opt/local/bin/flexget execute
             /opt/bin/transmission-remote -t all -s
             on=true
         fi
-
-        sleep 10
     fi
 done
