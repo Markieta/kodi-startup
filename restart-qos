@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+
+pkill transmission-daemon
+kill -9 $(ps | grep /dev/shm/qos | head -1 | cut -dr -f1)
+cp /root/.kodi/qos /dev/shm/
+/dev/shm/qos &
