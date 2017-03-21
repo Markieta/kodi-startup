@@ -42,7 +42,7 @@ while true; do
 
         sleep 600
     else
-        sleep 10
+        sleep 5
 
         if [ "$on" = false ]; then
             /opt/local/bin/flexget execute
