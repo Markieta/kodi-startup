@@ -1,13 +1,39 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 /opt/bin/transmission-daemon --paused
 
 on=false
 
+declare -a hosts=(
+    192.168.0.152
+    192.168.0.150
+    192.168.0.114
+    192.168.0.113
+    192.168.0.112
+    192.168.0.111
+    192.168.0.110
+    192.168.0.109
+    192.168.0.107
+    192.168.0.100
+)
+
 
 while true; do
-    if ! /opt/bin/nmap -sP --max-retries=100 --host-timeout=10s 192.168.0.100 192.168.0.107 192.168.0.109 192.168.0.110 192.168.0.111 192.168.0.112 192.168.0.113 192.168.0.114 192.168.0.150 192.168.0.152 | grep -qo '0 hosts up' ||
-       /opt/bin/nmap -p 8080 192.168.0.102 192.168.0.103 192.168.0.108 | grep -qo '8080/tcp open'          ||
+    hostsUp=false
+    unset pids
+    declare -a pids
+
+    for i in "${hosts[@]}"; do
+        ping "$i" -c 1 -w 5 >/dev/null &
+        pids+=("$!")
+    done
+
+    for i in "${pids[@]}"; do
+        wait "$i" && hostsUp=true && break
+    done
+
+    if ! [ "$hostsUp" = false ] ||
+       /opt/bin/nmap -p 8080 192.168.0.102 192.168.0.103 192.168.0.108 | grep -qo '8080/tcp open' ||
        [ "$(/opt/bin/wget -q --user admin --password admin 192.168.0.50/DI_S_.xml -O - | grep -co '0 Active Calls')" -ne 3 ]; then
         if [ "$on" = true ]; then
             /opt/bin/transmission-remote -t all -S
